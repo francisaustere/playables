@@ -1,0 +1,37 @@
+Keep everything. Finish the interface, the feedback and check the template. Add this section to game_spec.json:
+{"text":{"controlsKeyboard":"Arrows: move - 1/2: build - X: sell - Space: next wave","controlsTouch":"Tap a cell, then a tower - Tap Next wave","wave":"Wave","nextWave":"Next wave","sell":"Sell","coins":"Coins","base":"Base","win":"All waves cleared!","lose":"Base destroyed"}}
+
+HUD (anchored to visible screen edges + safe margin)
+- Top-left: score (large), coins below with a small diamond icon.
+- Top-center: text.wave "3/8" and the base HP bar (positive color, hazard under 30%).
+- Top-right: pause button.
+Rebuild HUD strings only when values change.
+
+TOWER BAR (bottom, from board.barTop)
+One button per tower entity: its look as icon, cost, key label (1, 2) once the keyboard has been used; the selected type outlined in player color; dimmed when not affordable. When the cursor is on a tower: a Sell button with the refund replaces the build buttons. On the right: Next wave button with the auto-start countdown (hidden during a wave and after the last one). Buttons follow the shared button kit and min touch size.
+
+RANGE PREVIEW
+Circle outline in player color at 30% alpha: range of the selected type at the cursor cell, or of the tower under the cursor.
+
+SCREENS
+- Title: board and path drawn, a few enemies walking (attract mode, no towers), title, best score, best wave, control hints text.controlsKeyboard / text.controlsTouch (highlight the last input type), text.tapToStart.
+- Wave start: "Wave 3" banner for 1 s.
+- Result: text.win or text.lose, score, best with "New best!", wave reached, towers built, Play again and Menu.
+
+FEEDBACK (style.feedback)
+Build: tower pops in (squash). Sell: tower shrinks + "+N" popup. Build refused: cursor shake. Fire: short barrel recoil (the barrel points at the target). Splash impact: ring burst. Enemy hit: flash. Kill: hazard burst + "+reward" popup in pickup color. Leak: base flash + small shake. Win / lose sounds on RESULT.
+
+DEBUG OVERLAY (when debug.showFps)
+FPS, enemies alive, projectiles alive, towers, wave, auto-start timer.
+
+ACCEPTANCE CHECK (fix anything that fails, then report)
+1. Enemies follow the path nodes; path and blocked cells can't be built on.
+2. Build works with arrows + 1/2 or Enter, with mouse and with touch (tap a cell, then a tower button or the same cell again).
+3. Selling refunds floor(cost x sellRefund); unaffordable or invalid builds give feedback.
+4. Blaster damages one enemy, mortar every enemy in splashRadius; projectiles never pass through enemies.
+5. Waves follow their groups (enemy, count, interval, delay) and hpScale; auto-start and early bonus work; autoStartDelay 0 is manual only.
+6. Leaks reduce base HP; 0 loses; the last wave cleared wins.
+7. Score shown = value sent with sendScore = best saved; bestWave saved.
+8. Changing the path, a wave or a tower stat in game_spec.json changes the game without code changes.
+9. Layout correct at 9:32, 9:16, 1:1, 16:9, 32:9; no value hard-coded outside game_spec.json, no console errors, no network requests, at least 30 FPS in wave 8.
+List the game_spec.json keys you added in this step, if any.

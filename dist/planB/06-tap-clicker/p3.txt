@@ -1,0 +1,35 @@
+Keep everything. Finish the interface, the feedback and check the template. Add this section to game_spec.json:
+{"text":{"controlsKeyboard":"Space: tap - 1-4: buy - 1/2: choose","controlsTouch":"Tap the core - Tap an upgrade to buy","currency":"coins","perSecond":"/s","goal":"Goal","level":"Lv","max":"MAX","choiceTitle":"Choose one","win":"Goal reached!","lose":"Time's up","suffixes":["","K","M","B","T"]}}
+
+HUD (anchored to visible screen edges + safe margin)
+- Top-left: bank (large, short format) with "+N/s" (text.perSecond) below; active boosts as small icons with their remaining time.
+- Top-center: text.goal progress bar (bank / targetCoins) and the timer mm:ss, hazard color under 30 s; no timer if timeLimit is 0.
+- Top-right: pause button. Bottom: the upgrade bar.
+Rebuild HUD strings only when the formatted value changes.
+
+SCREENS
+- Title: the core pulsing slowly, title, best score, fastest win, control hints text.controlsKeyboard / text.controlsTouch (highlight the last input type), text.tapToStart.
+- Choice card: text.choiceTitle, prompt, two option buttons with key labels 1 and 2, timeout bar.
+- Result: text.win or text.lose, score, best with "New best!", time, coins earned, upgrades bought, Play again and Menu.
+
+FEEDBACK AND SOUND (style.feedback, audio.sfx)
+- Tap: core squash, "+N" popup, tap sound.
+- Buy: burst on the button, level number pops, buy sound. Can't afford or max: button shake, denied sound.
+- Card opens: slide up, choice sound. Reward: special-colored burst + powerup sound. Loss: hazard flash + hit sound.
+- Boost active: special-colored ring around the core, pulsing; boost ends: ring fades, boostEnd sound.
+- Win: win sound; time's up: lose sound.
+
+DEBUG OVERLAY (when debug.showFps)
+FPS, tapValue, perSecond, multiplier, active boosts, discount, taps per second, next card in.
+
+ACCEPTANCE CHECK (fix anything that fails, then report)
+1. Tap works with Space, click and touch (multi-touch counts), capped at maxTapsPerSecond; holding Space does not auto-tap.
+2. "+N" popup on every tap; passive popups every second when income > 0.
+3. Upgrades buyable with keys 1-4, click and tap; cost = floor(baseCost x costGrowth ^ level); max level shows MAX.
+4. tapValue, perSecond and multiplier follow the formulas (check in the debug overlay).
+5. Cards appear every choiceInterval, chosen by 1/2, Left/Right, click or tap; timeout closes them; upgrades disabled while open.
+6. The 5 effect types work; gamble never makes the bank negative; boosts are replaced when over the limit.
+7. Win at targetCoins, lose at time up, timeLimit 0 works. Score = floor(totalEarned) + time bonus on win = value sent = best saved; bestTime and wins saved.
+8. Adding an upgrade or a choice card in game_spec.json works without code changes.
+9. Layout correct at 9:32, 9:16, 1:1, 16:9, 32:9; no value hard-coded outside game_spec.json, no console errors, no network requests.
+List the game_spec.json keys you added in this step, if any.

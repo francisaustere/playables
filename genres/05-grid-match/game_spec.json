@@ -1,0 +1,83 @@
+{
+  "meta": { "id": "grid-match", "title": "Grid & Match", "version": "0.1.0", "archetype": "grid-match", "scoreLabel": "Score" },
+  "text": {
+    "controlsKeyboard": "Arrows: move - Space: pick - Arrow: swap",
+    "controlsTouch": "Swipe a tile, or tap two neighbours",
+    "moves": "Moves",
+    "goalScore": "Reach",
+    "goalCovers": "Clear covers",
+    "levelClear": "Level clear!",
+    "win": "All levels clear!",
+    "lose": "Out of moves",
+    "shuffle": "No moves left: shuffling"
+  },
+  "input": {
+    "bindings": {
+      "up": { "keys": ["ArrowUp", "KeyW"], "pointer": "cellSwipeUp" },
+      "down": { "keys": ["ArrowDown", "KeyS"], "pointer": "cellSwipeDown" },
+      "left": { "keys": ["ArrowLeft", "KeyA"], "pointer": "cellSwipeLeft" },
+      "right": { "keys": ["ArrowRight", "KeyD"], "pointer": "cellSwipeRight" },
+      "select": { "keys": ["Space", "Enter"], "pointer": "cellTap" }
+    }
+  },
+  "rules": {
+    "minMatch": 3,
+    "pointsPerTile": 20,
+    "cascadeStep": 0.5,
+    "maxCascadeMultiplier": 4,
+    "movePoints": 50,
+    "bonusesEnabled": true,
+    "hintDelay": 5,
+    "shuffleTries": 20,
+    "patterns": [
+      { "id": "line5", "shape": "line", "size": 5, "bonus": "colorBomb", "points": 200 },
+      { "id": "cross", "shape": "LT", "size": 5, "bonus": "bomb", "points": 150 },
+      { "id": "line4", "shape": "line", "size": 4, "bonus": "lineClear", "points": 60 },
+      { "id": "line3", "shape": "line", "size": 3, "bonus": "", "points": 0 }
+    ]
+  },
+  "board": {
+    "maxWidth": 660,
+    "maxHeight": 820,
+    "centerY": 700,
+    "cellGap": 6,
+    "tileScale": 0.78,
+    "swapDuration": 0.15,
+    "clearDuration": 0.2,
+    "fallCellDuration": 0.06,
+    "cascadePause": 0.08,
+    "levelClearDelay": 1.2
+  },
+  "entities": [
+    { "id": "t1", "kind": "tile", "look": { "shape": "circle", "color": "player", "size": 1 } },
+    { "id": "t2", "kind": "tile", "look": { "shape": "diamond", "color": "pickup", "size": 1 } },
+    { "id": "t3", "kind": "tile", "look": { "shape": "triangle", "color": "positive", "size": 1 } },
+    { "id": "t4", "kind": "tile", "look": { "shape": "hexagon", "color": "special", "size": 1 } },
+    { "id": "t5", "kind": "tile", "look": { "shape": "roundRect", "color": "neutral", "size": 1 } },
+    { "id": "t6", "kind": "tile", "look": { "shape": "ring", "color": "text", "size": 1 } },
+    { "id": "lineClear", "kind": "bonus", "effect": "line", "look": { "shape": "rect", "color": "text", "size": 0.25 } },
+    { "id": "bomb", "kind": "bonus", "effect": "area", "radius": 1, "look": { "shape": "ring", "color": "text", "size": 0.5 } },
+    { "id": "colorBomb", "kind": "bonus", "effect": "color", "look": { "shape": "hexagon", "color": "text", "size": 1 } },
+    { "id": "cover", "kind": "cover", "symbol": "c", "layers": 1, "look": { "shape": "roundRect", "color": "surface", "size": 1 } },
+    { "id": "cover2", "kind": "cover", "symbol": "C", "layers": 2, "look": { "shape": "roundRect", "color": "line", "size": 1 } }
+  ],
+  "levels": [
+    { "id": "l1", "cols": 6, "rows": 6, "tileTypes": 4, "moves": 15, "goal": "score", "target": 1200, "layout": [] },
+    { "id": "l2", "cols": 7, "rows": 8, "tileTypes": 5, "moves": 20, "goal": "covers", "target": 0,
+      "layout": [".......", ".......", "..ccc..", ".c...c.", ".c...c.", "..ccc..", ".......", "......."] },
+    { "id": "l3", "cols": 8, "rows": 9, "tileTypes": 5, "moves": 22, "goal": "covers", "target": 0,
+      "layout": ["#......#", "........", ".cCccCc.", "........", "...##...", "........", ".cCccCc.", "........", "#......#"] },
+    { "id": "l4", "cols": 9, "rows": 9, "tileTypes": 6, "moves": 25, "goal": "score", "target": 4000, "layout": [] }
+  ],
+  "limits": { "tiles": 81, "particles": 96, "popups": 16 },
+  "audio": {
+    "sfx": {
+      "swap": { "wave": "sine", "freq": 440, "freqEnd": 520, "duration": 0.08, "volume": 0.25 },
+      "invalid": { "wave": "square", "freq": 200, "freqEnd": 160, "duration": 0.12, "volume": 0.25 },
+      "match": { "wave": "triangle", "freq": 660, "freqEnd": 880, "duration": 0.1, "volume": 0.35 },
+      "bonus": { "wave": "square", "freq": 330, "freqEnd": 990, "duration": 0.25, "volume": 0.35 },
+      "cover": { "wave": "noise", "freq": 0, "duration": 0.08, "volume": 0.3 },
+      "shuffle": { "wave": "sine", "freq": 300, "freqEnd": 600, "duration": 0.3, "volume": 0.3 }
+    }
+  }
+}

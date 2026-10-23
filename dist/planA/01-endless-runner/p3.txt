@@ -1,0 +1,34 @@
+Keep everything. Finish the interface, the feedback and check the template.
+
+HUD (anchored to visible screen edges + safe margin)
+- Top-left: score (large), coins below with a small diamond icon.
+- Top-center: distance "123 m" (text.distanceUnit). When a multiplier is active: a "x2" badge in special color under it with a shrinking timer bar.
+- Top-right: pause button. Nothing at the bottom: keep the lanes readable.
+Only rebuild HUD strings when the value changes.
+
+SCREENS
+- Title: attract mode with lanes scrolling slowly (300 u/s, no obstacles), game title, best score, control hints text.controlsKeyboard and text.controlsTouch (highlight the last input type used), text.tapToStart.
+- Result: text.lose ("Run over") or text.win, score, best with "New best!" when beaten, distance in m, coins, buttons Play again and Menu.
+
+FEEDBACK AND SOUND (values from style.feedback and audio.sfx)
+- Lane switch: squash + laneSwitch sound.
+- Jump: scale arc with ground shadow + action sound; landing: squash + land sound.
+- Coin: "+N" popup, small pickup-colored burst, collect sound.
+- Gate: special-colored burst, badge pop, gate sound.
+- Hit: player flash, screen shake, obstacle bursts into particles, hit sound.
+- Result: lose or win sound.
+
+DEBUG OVERLAY (when debug.showFps)
+FPS, active entities, current speed, rowGap, multiplier.
+
+ACCEPTANCE CHECK (fix anything that fails, then report)
+1. Lane switch works with arrows/A/D, swipes and mouse drag, same tween duration.
+2. Jump works with Space/Up/W, tap, swipe up; barriers are ignored in the air, blocks still hit.
+3. Changing a pattern string in game_spec.json changes the rows.
+4. 5 minutes with debug.invincible: never an impassable row, speed follows the curve, at least 30 FPS.
+5. Gates set and refresh the multiplier, capped at maxMultiplier, badge and timer visible.
+6. Score shown = floor(score) = value sent with sendScore = best saved.
+7. targetDistance 500 gives a win screen at 500 m; lives 3 gives blinking invulnerability; gatesEnabled false and jumpEnabled false run without errors.
+8. Layout correct at 9:32, 9:16, 1:1, 16:9, 32:9; full run possible with keyboard only and touch only.
+9. No value hard-coded outside game_spec.json, no console errors, no network requests.
+List the game_spec.json keys you added in this step, if any.

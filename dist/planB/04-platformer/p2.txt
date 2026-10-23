@@ -1,0 +1,27 @@
+Keep everything. Add the camera, the real levels and the run structure. Add these sections to game_spec.json:
+{"camera":{"lerp":8,"deadzoneW":120,"deadzoneH":200},"levels":{"tileSize":64,"solidSymbol":"#","playerSymbol":"P","tileLook":{"shape":"rect","color":"surface","outline":"line"},"list":[{"id":"l1","rows":["############","#.........G#","#.....######","#..........#","#....C.....#","######.....#","#..........#","#......E..C#","#.....######","#..........#","#..K.......#","######.....#","#..........#","#...C......#","#.....######","#..........#","#..........#","####.......#","#..........#","#.....E....#","#...######.#","#.C........#","#P........C#","####...#####"]},{"id":"l2","rows":["################","#.............G#","#..........#####","#..............#","#....C...E.....#","#.....#####....#","#..............#","#.K............#","####...........#","#..............#","#...C..........#","#..#####.......#","#..............#","#.........E....#","#........#####.#","#..............#","#P..C..^^...E.C#","##########..####"]}]},"limits":{"enemies":24,"pickups":64},"audio":{"sfx":{"doubleJump":{"wave":"triangle","freq":700,"freqEnd":1000,"duration":0.07,"volume":0.35},"stomp":{"wave":"square","freq":300,"freqEnd":150,"duration":0.08,"volume":0.35},"land":{"wave":"triangle","freq":180,"freqEnd":120,"duration":0.05,"volume":0.25},"checkpoint":{"wave":"sine","freq":523,"freqEnd":784,"duration":0.2,"volume":0.35},"levelClear":{"wave":"triangle","freq":659,"freqEnd":1318,"duration":0.35,"volume":0.4}}}}
+
+CAMERA
+Follows the player center with a centered deadzone (camera.deadzoneW x deadzoneH); outside it, moves toward the player by min(1, camera.lerp*dt) of the gap. Clamped to the level bounds; on an axis where the view is larger than the level, the level is centered. Snaps to the player on respawn and level start.
+
+LEVELS
+Replace the test grid with levels.list, played in order. Each level is rows (strings, row 0 at the top) of tileSize tiles: levels.solidSymbol solid, "." empty, levels.playerSymbol start, other symbols = entity with that symbol. Validate on load: pad short rows with "." and warn in debug; no start -> first empty tile of the bottom row; no goal -> warn in debug. Pre-render all solid tiles once per level to an offscreen canvas with levels.tileLook (surface fill, line outline); split in chunks if larger than 4096 px.
+Enemies and coins come from pools sized by limits; an enemy that falls below the kill zone is despawned silently.
+
+RUN STRUCTURE
+- Lives (rules.lives) are kept across levels; score too.
+- Level time counts from level start (frozen in pause).
+- Goal touched: timeBonus = max(0, timeBonusMax - levelTime*timeBonusPerSecond), add to score, levelClear sound, go to LEVEL_CLEAR (a state like RESULT without sendScore) showing time and bonus with a "Next level" button (confirm). After the last level's goal -> RESULT win.
+- Lives 0 -> RESULT lose.
+- Coin: +points, collect sound, "+N" popup. Checkpoint: ring fills with special color, checkpoint sound. Stomp: stomp sound. Landing faster than 300 u/s: land sound + squash.
+
+SCORE AND SAVE
+Score = coins + stomps + time bonuses. On RESULT: sendScore(score), save best and progress {bestLevel}.
+
+EDGE CASES
+- Respawn while an enemy stands on the checkpoint: invulnerability prevents instant death.
+- Pause while a touch button is held: released, must be pressed again after resume.
+- Landing exactly on a tile corner slides off (X resolved first), never snags.
+- maxJumps 1 disables the double jump cleanly; 3 allows a triple jump.
+
+Check: complete both levels with keyboard, then with the on-screen buttons; die in the pit and on spikes (respawn at checkpoint); lose all lives; no errors.

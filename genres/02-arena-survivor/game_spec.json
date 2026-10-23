@@ -1,0 +1,84 @@
+{
+  "meta": { "id": "arena-survivor", "title": "Arena Survivor", "version": "0.1.0", "archetype": "survive-explore", "scoreLabel": "XP" },
+  "display": { "fit": "expand" },
+  "text": {
+    "controlsKeyboard": "WASD/Arrows: move - IJKL: aim and fire",
+    "controlsTouch": "Left thumb: move - Right thumb: aim and fire",
+    "lose": "Defeated",
+    "win": "You survived!",
+    "xp": "XP",
+    "hp": "HP",
+    "kills": "Kills",
+    "time": "Time"
+  },
+  "input": {
+    "aimDeadzone": 0.25,
+    "bindings": {
+      "move": { "keys": { "up": ["KeyW", "ArrowUp"], "down": ["KeyS", "ArrowDown"], "left": ["KeyA", "ArrowLeft"], "right": ["KeyD", "ArrowRight"] }, "pointer": "joystickLeft" },
+      "aim": { "keys": { "up": ["KeyI"], "down": ["KeyK"], "left": ["KeyJ"], "right": ["KeyL"] }, "pointer": ["joystickRight", "mouseAimRight"] }
+    }
+  },
+  "rules": { "duration": 180, "fireMode": "both", "invulnerableTime": 0.6, "knockback": 260, "itemBlinkTime": 3 },
+  "world": {
+    "width": 2400,
+    "height": 2400,
+    "wallThickness": 40,
+    "floorGrid": 160,
+    "cameraLerp": 8,
+    "spawnMargin": 80,
+    "obstacles": [
+      { "x": 500, "y": 500, "w": 200, "h": 200 },
+      { "x": 1700, "y": 500, "w": 200, "h": 200 },
+      { "x": 500, "y": 1700, "w": 200, "h": 200 },
+      { "x": 1700, "y": 1700, "w": 200, "h": 200 }
+    ],
+    "obstacleLook": { "shape": "rect", "color": "neutral" },
+    "scatterGems": 40
+  },
+  "player": {
+    "maxHp": 100,
+    "speed": 420,
+    "accel": 3200,
+    "magnetRadius": 160,
+    "pickupRadius": 40,
+    "look": { "shape": "circle", "color": "player", "size": 60 }
+  },
+  "weapon": {
+    "fireInterval": 0.28,
+    "autoRange": 420,
+    "projectileSpeed": 900,
+    "projectileLife": 1.1,
+    "damage": 1,
+    "pierce": 0,
+    "look": { "shape": "circle", "color": "player", "size": 20 }
+  },
+  "entities": [
+    { "id": "chaser", "kind": "enemy", "hp": 2, "speed": 160, "touchDamage": 10, "xp": 1, "look": { "shape": "triangle", "color": "hazard", "size": 48 } },
+    { "id": "runner", "kind": "enemy", "hp": 1, "speed": 270, "touchDamage": 8, "xp": 1, "look": { "shape": "triangle", "color": "hazard", "size": 36 } },
+    { "id": "tank", "kind": "enemy", "hp": 8, "speed": 90, "touchDamage": 20, "xp": 5, "look": { "shape": "rect", "color": "hazard", "size": 80 } },
+    { "id": "gem", "kind": "xp", "magnetSpeed": 700, "magnetRamp": 0.15, "look": { "shape": "diamond", "color": "pickup", "size": 24 } },
+    { "id": "heart", "kind": "heal", "heal": 25, "dropChance": 0.03, "life": 20, "look": { "shape": "circle", "color": "positive", "size": 32 } },
+    { "id": "magnet", "kind": "magnet", "dropChance": 0.01, "life": 20, "look": { "shape": "hexagon", "color": "special", "size": 40 } }
+  ],
+  "difficulty": {
+    "spawnInterval": [{ "at": 0, "value": 1.2 }, { "at": 60, "value": 0.6 }, { "at": 180, "value": 0.25 }],
+    "enemySpeedScale": [{ "at": 0, "value": 1 }, { "at": 180, "value": 1.35 }],
+    "typeWeights": {
+      "chaser": [{ "at": 0, "value": 1 }, { "at": 180, "value": 1 }],
+      "runner": [{ "at": 0, "value": 0 }, { "at": 30, "value": 0.3 }, { "at": 180, "value": 0.8 }],
+      "tank": [{ "at": 0, "value": 0 }, { "at": 60, "value": 0.1 }, { "at": 180, "value": 0.4 }]
+    },
+    "waveInterval": 30,
+    "waveSize": [{ "at": 30, "value": 8 }, { "at": 180, "value": 24 }],
+    "separation": 0.5
+  },
+  "limits": { "enemies": 120, "projectiles": 80, "gems": 220, "items": 8 },
+  "audio": {
+    "sfx": {
+      "shoot": { "wave": "square", "freq": 880, "freqEnd": 660, "duration": 0.04, "volume": 0.15 },
+      "enemyHit": { "wave": "triangle", "freq": 300, "freqEnd": 220, "duration": 0.04, "volume": 0.2 },
+      "wave": { "wave": "sawtooth", "freq": 220, "freqEnd": 440, "duration": 0.3, "volume": 0.3 },
+      "heal": { "wave": "sine", "freq": 660, "freqEnd": 990, "duration": 0.2, "volume": 0.35 }
+    }
+  }
+}

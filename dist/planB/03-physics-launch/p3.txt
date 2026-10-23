@@ -1,0 +1,37 @@
+Keep everything. Finish the interface, the feedback and check the template. Add this section to game_spec.json and use it for every string:
+{"text":{"controlsKeyboard":"Left/Right: aim - Hold Space: power, release: launch","controlsTouch":"Drag back and release to launch","controlsTouchImpulse":"Touch to aim, hold for power, release to launch","lose":"Out of shots","win":"All levels cleared!","levelClear":"Level clear!","level":"Level","shots":"Shots","next":"Next level"}}
+
+HUD (anchored to visible screen edges + safe margin, strings rebuilt only on change)
+- Top-left: score (large), "Level 2/5" below (text.level).
+- Top-center: remaining shots as small player-colored circles, used shots as empty line-colored rings.
+- Top-right: pause button.
+- While charging: power bar next to the launcher (16x160, player fill, pickup color above 0.9), aim line, preview dots.
+
+SCREENS
+- Title: attract mode showing level 1 with an automatic demo shot every 3 s, game title, best score, hints: text.controlsKeyboard plus text.controlsTouch (slingshot) or text.controlsTouchImpulse (tapImpulse), highlight the last input type used, text.tapToStart.
+- LEVEL_CLEAR: text.levelClear, shots bonus, button text.next.
+- Result: text.lose or text.win, score, best with "New best!", levels cleared, buttons Play again and Menu.
+
+FEEDBACK (style.feedback)
+- Charging: ball squashes toward the pull direction, up to 15%.
+- Launch: short stretch 0.1 s.
+- Bounce: squash on contact + 3 particles in the obstacle color.
+- Target break: burst in the target color + "+N" popup.
+- Level clear: remaining shot icons pop one by one into "+bonus" popups.
+
+DEBUG OVERLAY (debug.showFps)
+FPS, phase, ball speed, substeps used this frame, shots left.
+
+ACCEPTANCE CHECK (fix anything that fails, then report)
+1. Slingshot: drag back anywhere, aim line + power bar + preview, release launches; a tiny drag cancels without using a shot.
+2. tapImpulse: angle follows the pointer, meter oscillates while held, release launches.
+3. Keyboard in both modes: arrows aim, Space hold/release launches with the same physics.
+4. Editing gravity, restitution or friction in game_spec.json changes the flight as expected.
+5. maxLaunchSpeed 2500 with restitution 1: no tunneling; bouncer adds energy, sticky kills it.
+6. One shot can break several targets; slow touches bounce off.
+7. Shots counter, rest detection and bonus (remaining shots * shotBonus) are correct.
+8. 5 levels in order with LEVEL_CLEAR between them, win after level 5, lose when out of shots.
+9. Score shown = value sent with sendScore = best saved.
+10. Layout correct at 9:32, 9:16, 1:1, 16:9, 32:9; full run with keyboard only, mouse only and touch only.
+11. No value hard-coded outside game_spec.json, no console errors, no network requests.
+List the game_spec.json keys you added in this step, if any.

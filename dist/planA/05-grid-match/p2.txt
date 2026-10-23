@@ -1,0 +1,25 @@
+Keep everything. Add levels, hidden cells, bonus patterns and goals. Add these sections to game_spec.json:
+{"rules":{"minMatch":3,"pointsPerTile":20,"cascadeStep":0.5,"maxCascadeMultiplier":4,"movePoints":50,"bonusesEnabled":true,"hintDelay":5,"shuffleTries":20,"patterns":[{"id":"line5","shape":"line","size":5,"bonus":"colorBomb","points":200},{"id":"cross","shape":"LT","size":5,"bonus":"bomb","points":150},{"id":"line4","shape":"line","size":4,"bonus":"lineClear","points":60},{"id":"line3","shape":"line","size":3,"bonus":"","points":0}]},"levels":[{"id":"l1","cols":6,"rows":6,"tileTypes":4,"moves":15,"goal":"score","target":1200,"layout":[]},{"id":"l2","cols":7,"rows":8,"tileTypes":5,"moves":20,"goal":"covers","target":0,"layout":[".......",".......","..ccc..",".c...c.",".c...c.","..ccc..",".......","......."]},{"id":"l3","cols":8,"rows":9,"tileTypes":5,"moves":22,"goal":"covers","target":0,"layout":["#......#","........",".cCccCc.","........","...##...","........",".cCccCc.","........","#......#"]},{"id":"l4","cols":9,"rows":9,"tileTypes":6,"moves":25,"goal":"score","target":4000,"layout":[]}],"limits":{"tiles":81,"particles":96,"popups":16},"audio":{"sfx":{"swap":{"wave":"sine","freq":440,"freqEnd":520,"duration":0.08,"volume":0.25},"invalid":{"wave":"square","freq":200,"freqEnd":160,"duration":0.12,"volume":0.25},"match":{"wave":"triangle","freq":660,"freqEnd":880,"duration":0.1,"volume":0.35},"bonus":{"wave":"square","freq":330,"freqEnd":990,"duration":0.25,"volume":0.35},"cover":{"wave":"noise","freq":0,"duration":0.08,"volume":0.3},"shuffle":{"wave":"sine","freq":300,"freqEnd":600,"duration":0.3,"volume":0.3}}}}
+
+LEVELS
+A run plays levels in order; the score accumulates. Each level sets cols, rows (2-9), tileTypes (first N tile entities, clamped), moves, goal ("score": score earned in this level >= target; "covers": no cover left) and layout: rows strings of cols symbols, "." normal, "#" hole (no cell, not drawn), a cover entity symbol = covered cell ("c" 1 layer, "C" 2 layers); empty layout = all normal. Wrong layout size: missing cells = ".", debug warning. Recompute the board layout for each level.
+
+COVERS (hidden / revealed cells)
+A covered cell hides its tile (draw the cover look with one dot per layer) and locks it: no select, no swap, not matched, does not fall. A match orthogonally adjacent to it, or a bonus effect hitting it, removes one layer (at most once per clear step). At 0 layers the tile is revealed and becomes normal (it may match in the next cascade step).
+Gravity with holes and covers: in each column, holes and covered cells split it into segments; tiles compact down inside their segment; empty cells at the top of a segment get new tiles falling in from just above it.
+
+PATTERNS AND BONUSES (only if rules.bonusesEnabled)
+For each match group pick the first entry of rules.patterns that fits: "line" of size N = one run of length >= N; "LT" = a horizontal and a vertical run sharing a cell, total >= size. Score = pattern.points + cells * pointsPerTile, times the cascade multiplier. If the pattern has a bonus, one cell of the group keeps a tile with that bonus (the swapped cell if in the group, else the middle cell).
+Bonus effects when the bonus tile is cleared: lineClear clears its row (made from a horizontal run) or column (vertical); bomb clears cells within radius (3x3); colorBomb has no type, swapping it with any tile is always valid and clears every tile of that type (colorBomb + colorBomb clears the board); hit by an effect it clears a random present type. Effects chain in the same clear step, each cell cleared once, and damage adjacent covers.
+
+CASCADES
+Depth d = 0 for the swap's matches, +1 per following clear step. multiplier = min(1 + d*cascadeStep, maxCascadeMultiplier).
+
+SETTLE
+1. Goal met -> add unused moves * movePoints, wait board.levelClearDelay, LEVEL_CLEAR screen (text.levelClear, Next button), then next level; after the last level RESULT win. Goal checked before moves.
+2. Moves 0 -> RESULT lose.
+3. Deadlock: test every swappable pair (right and down neighbours); none valid -> show text.shuffle 1 s, shuffle types of unlocked non-bonus tiles until no immediate match and a move exists (max shuffleTries, then regenerate those cells).
+HINT: after rules.hintDelay s idle in IDLE, the two tiles of one valid move pulse until the next input.
+
+SAVE: progress {highestLevel}. Pools sized by limits; skip particles when the pool is empty.
+Check: play the 4 levels with debug.invincible (moves never decrease); holes, covers, bonuses and shuffle all work.

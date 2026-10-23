@@ -1,0 +1,255 @@
+{
+  "meta": {
+    "id": "platformer",
+    "title": "Platformer",
+    "version": "0.1.0",
+    "archetype": "platformer",
+    "scoreLabel": "Score"
+  },
+  "display": {
+    "fit": "expand"
+  },
+  "text": {
+    "controlsKeyboard": "Left/Right or A/D: run - Space/Up/W: jump (twice for double jump)",
+    "controlsTouch": "Left/right buttons: run - Jump button: jump (twice for double jump)",
+    "lose": "Game over",
+    "win": "All levels cleared!",
+    "levelClear": "Level clear!",
+    "level": "Level",
+    "next": "Next level"
+  },
+  "input": {
+    "touchButtons": {
+      "size": 128,
+      "gap": 24,
+      "alpha": 0.45,
+      "showOnlyAfterTouch": true
+    },
+    "bindings": {
+      "left": {
+        "keys": [
+          "ArrowLeft",
+          "KeyA"
+        ],
+        "pointer": "button:left"
+      },
+      "right": {
+        "keys": [
+          "ArrowRight",
+          "KeyD"
+        ],
+        "pointer": "button:right"
+      },
+      "jump": {
+        "keys": [
+          "Space",
+          "ArrowUp",
+          "KeyW"
+        ],
+        "pointer": "button:jump"
+      }
+    }
+  },
+  "rules": {
+    "lives": 3,
+    "invulnerableTime": 1.5,
+    "killZoneOffset": 256,
+    "timeBonusMax": 1000,
+    "timeBonusPerSecond": 10
+  },
+  "player": {
+    "gravity": 2600,
+    "maxFall": 1400,
+    "runSpeed": 420,
+    "accel": 3000,
+    "decel": 3600,
+    "airAccel": 2000,
+    "jumpHeight": 220,
+    "doubleJumpHeight": 150,
+    "maxJumps": 2,
+    "jumpCut": 0.45,
+    "coyoteTime": 0.1,
+    "jumpBuffer": 0.12,
+    "stompBounce": 700,
+    "stompTolerance": 16,
+    "hurtKnockback": {
+      "x": 360,
+      "y": 600
+    },
+    "look": {
+      "shape": "roundRect",
+      "color": "player",
+      "w": 44,
+      "h": 56
+    }
+  },
+  "camera": {
+    "lerp": 8,
+    "deadzoneW": 120,
+    "deadzoneH": 200
+  },
+  "entities": [
+    {
+      "id": "patroller",
+      "kind": "enemy",
+      "symbol": "E",
+      "speed": 120,
+      "turnAtEdges": true,
+      "points": 100,
+      "look": {
+        "shape": "rect",
+        "color": "hazard",
+        "w": 52,
+        "h": 40
+      }
+    },
+    {
+      "id": "coin",
+      "kind": "pickup",
+      "symbol": "C",
+      "points": 10,
+      "look": {
+        "shape": "diamond",
+        "color": "pickup",
+        "size": 36
+      }
+    },
+    {
+      "id": "spikes",
+      "kind": "hazardTile",
+      "symbol": "^",
+      "look": {
+        "shape": "triangle",
+        "color": "hazard",
+        "size": 64
+      }
+    },
+    {
+      "id": "checkpoint",
+      "kind": "checkpoint",
+      "symbol": "K",
+      "look": {
+        "shape": "ring",
+        "color": "special",
+        "size": 56
+      }
+    },
+    {
+      "id": "goal",
+      "kind": "goal",
+      "symbol": "G",
+      "look": {
+        "shape": "ring",
+        "color": "positive",
+        "size": 96
+      }
+    }
+  ],
+  "levels": {
+    "tileSize": 64,
+    "solidSymbol": "#",
+    "playerSymbol": "P",
+    "tileLook": {
+      "shape": "rect",
+      "color": "surface",
+      "outline": "line"
+    },
+    "list": [
+      {
+        "id": "l1",
+        "rows": [
+          "############",
+          "#.........G#",
+          "#.....######",
+          "#..........#",
+          "#....C.....#",
+          "######.....#",
+          "#..........#",
+          "#......E..C#",
+          "#.....######",
+          "#..........#",
+          "#..K.......#",
+          "######.....#",
+          "#..........#",
+          "#...C......#",
+          "#.....######",
+          "#..........#",
+          "#..........#",
+          "####.......#",
+          "#..........#",
+          "#.....E....#",
+          "#...######.#",
+          "#.C........#",
+          "#P........C#",
+          "####...#####"
+        ]
+      },
+      {
+        "id": "l2",
+        "rows": [
+          "################",
+          "#.............G#",
+          "#..........#####",
+          "#..............#",
+          "#....C...E.....#",
+          "#.....#####....#",
+          "#..............#",
+          "#.K............#",
+          "####...........#",
+          "#..............#",
+          "#...C..........#",
+          "#..#####.......#",
+          "#..............#",
+          "#.........E....#",
+          "#........#####.#",
+          "#..............#",
+          "#P..C..^^...E.C#",
+          "##########..####"
+        ]
+      }
+    ]
+  },
+  "limits": {
+    "enemies": 24,
+    "pickups": 64
+  },
+  "audio": {
+    "sfx": {
+      "doubleJump": {
+        "wave": "triangle",
+        "freq": 700,
+        "freqEnd": 1000,
+        "duration": 0.07,
+        "volume": 0.35
+      },
+      "stomp": {
+        "wave": "square",
+        "freq": 300,
+        "freqEnd": 150,
+        "duration": 0.08,
+        "volume": 0.35
+      },
+      "land": {
+        "wave": "triangle",
+        "freq": 180,
+        "freqEnd": 120,
+        "duration": 0.05,
+        "volume": 0.25
+      },
+      "checkpoint": {
+        "wave": "sine",
+        "freq": 523,
+        "freqEnd": 784,
+        "duration": 0.2,
+        "volume": 0.35
+      },
+      "levelClear": {
+        "wave": "triangle",
+        "freq": 659,
+        "freqEnd": 1318,
+        "duration": 0.35,
+        "volume": 0.4
+      }
+    }
+  }
+}

@@ -1,0 +1,336 @@
+{
+  "meta": {
+    "id": "tap-clicker",
+    "title": "Tap & Choose",
+    "version": "0.1.0",
+    "archetype": "tap-clicker",
+    "scoreLabel": "Coins earned"
+  },
+  "text": {
+    "controlsKeyboard": "Space: tap - 1-4: buy - 1/2: choose",
+    "controlsTouch": "Tap the core - Tap an upgrade to buy",
+    "currency": "coins",
+    "perSecond": "/s",
+    "goal": "Goal",
+    "level": "Lv",
+    "max": "MAX",
+    "choiceTitle": "Choose one",
+    "win": "Goal reached!",
+    "lose": "Time's up",
+    "suffixes": [
+      "",
+      "K",
+      "M",
+      "B",
+      "T"
+    ]
+  },
+  "input": {
+    "bindings": {
+      "tap": {
+        "keys": [
+          "Space"
+        ],
+        "pointer": "tapCore"
+      },
+      "buy1": {
+        "keys": [
+          "Digit1",
+          "Numpad1"
+        ],
+        "pointer": "upgradeButton"
+      },
+      "buy2": {
+        "keys": [
+          "Digit2",
+          "Numpad2"
+        ],
+        "pointer": "upgradeButton"
+      },
+      "buy3": {
+        "keys": [
+          "Digit3",
+          "Numpad3"
+        ],
+        "pointer": "upgradeButton"
+      },
+      "buy4": {
+        "keys": [
+          "Digit4",
+          "Numpad4"
+        ],
+        "pointer": "upgradeButton"
+      },
+      "choose1": {
+        "keys": [
+          "Digit1",
+          "Numpad1",
+          "ArrowLeft"
+        ],
+        "pointer": "choiceButton"
+      },
+      "choose2": {
+        "keys": [
+          "Digit2",
+          "Numpad2",
+          "ArrowRight"
+        ],
+        "pointer": "choiceButton"
+      }
+    }
+  },
+  "rules": {
+    "targetCoins": 100000,
+    "timeLimit": 240,
+    "timeBonusPerSecond": 500,
+    "maxTapsPerSecond": 20,
+    "passivePopupInterval": 1,
+    "choiceTimeout": 8
+  },
+  "economy": {
+    "startCoins": 0,
+    "tapValue": 1,
+    "upgrades": [
+      {
+        "id": "strongTap",
+        "name": "Strong tap",
+        "baseCost": 15,
+        "costGrowth": 1.15,
+        "maxLevel": 50,
+        "effect": {
+          "tapAdd": 1
+        },
+        "look": {
+          "shape": "circle",
+          "color": "player",
+          "size": 40
+        }
+      },
+      {
+        "id": "helper",
+        "name": "Helper",
+        "baseCost": 50,
+        "costGrowth": 1.15,
+        "maxLevel": 50,
+        "effect": {
+          "perSecond": 2
+        },
+        "look": {
+          "shape": "diamond",
+          "color": "pickup",
+          "size": 40
+        }
+      },
+      {
+        "id": "factory",
+        "name": "Factory",
+        "baseCost": 600,
+        "costGrowth": 1.15,
+        "maxLevel": 50,
+        "effect": {
+          "perSecond": 25
+        },
+        "look": {
+          "shape": "rect",
+          "color": "neutral",
+          "size": 40
+        }
+      },
+      {
+        "id": "booster",
+        "name": "Booster x2",
+        "baseCost": 2000,
+        "costGrowth": 4,
+        "maxLevel": 4,
+        "effect": {
+          "multiply": 2
+        },
+        "look": {
+          "shape": "hexagon",
+          "color": "special",
+          "size": 40
+        }
+      }
+    ]
+  },
+  "entities": [
+    {
+      "id": "core",
+      "kind": "core",
+      "x": 360,
+      "y": 560,
+      "tapSquash": 0.12,
+      "popupSpread": 50,
+      "look": {
+        "shape": "circle",
+        "color": "player",
+        "size": 260
+      }
+    }
+  ],
+  "levels": {
+    "choices": [
+      {
+        "id": "safeOrBold",
+        "prompt": "A crate appears",
+        "options": [
+          {
+            "label": "+15% coins now",
+            "effects": [
+              {
+                "type": "addCoinsRatio",
+                "value": 0.15
+              }
+            ]
+          },
+          {
+            "label": "50%: double, 50%: lose half",
+            "effects": [
+              {
+                "type": "gamble",
+                "chance": 0.5,
+                "winRatio": 1,
+                "loseRatio": -0.5
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "tapOrIdle",
+        "prompt": "Power surge",
+        "options": [
+          {
+            "label": "Taps x5 for 15 s",
+            "effects": [
+              {
+                "type": "boost",
+                "target": "tap",
+                "multiply": 5,
+                "duration": 15
+              }
+            ]
+          },
+          {
+            "label": "Income x3 for 15 s",
+            "effects": [
+              {
+                "type": "boost",
+                "target": "passive",
+                "multiply": 3,
+                "duration": 15
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "saleOrCash",
+        "prompt": "Market day",
+        "options": [
+          {
+            "label": "Upgrades -50% for 20 s",
+            "effects": [
+              {
+                "type": "discount",
+                "value": 0.5,
+                "duration": 20
+              }
+            ]
+          },
+          {
+            "label": "+60 s of income now",
+            "effects": [
+              {
+                "type": "addIncomeSeconds",
+                "value": 60
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "quizShape",
+        "prompt": "Quiz: which shape has 6 sides?",
+        "options": [
+          {
+            "label": "Hexagon",
+            "effects": [
+              {
+                "type": "addIncomeSeconds",
+                "value": 30
+              }
+            ]
+          },
+          {
+            "label": "Pentagon",
+            "effects": [
+              {
+                "type": "boost",
+                "target": "all",
+                "multiply": 0.5,
+                "duration": 10
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "difficulty": {
+    "choiceInterval": [
+      {
+        "at": 0,
+        "value": 30
+      },
+      {
+        "at": 180,
+        "value": 20
+      }
+    ]
+  },
+  "limits": {
+    "popups": 32,
+    "particles": 64,
+    "boosts": 4
+  },
+  "audio": {
+    "sfx": {
+      "tap": {
+        "wave": "triangle",
+        "freq": 520,
+        "freqEnd": 620,
+        "duration": 0.04,
+        "volume": 0.25
+      },
+      "buy": {
+        "wave": "square",
+        "freq": 440,
+        "freqEnd": 880,
+        "duration": 0.12,
+        "volume": 0.3
+      },
+      "denied": {
+        "wave": "square",
+        "freq": 180,
+        "freqEnd": 150,
+        "duration": 0.1,
+        "volume": 0.25
+      },
+      "choice": {
+        "wave": "sine",
+        "freq": 600,
+        "freqEnd": 900,
+        "duration": 0.2,
+        "volume": 0.35
+      },
+      "boostEnd": {
+        "wave": "sine",
+        "freq": 700,
+        "freqEnd": 350,
+        "duration": 0.2,
+        "volume": 0.25
+      }
+    }
+  }
+}

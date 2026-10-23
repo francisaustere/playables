@@ -1,0 +1,18 @@
+{
+  "charLimit": 5500,
+  "assumedPbLimit": 6000,
+  "commonBlockBudget": 1600,
+  "preambleBudget": 700,
+  "genres": [
+    "01-endless-runner",
+    "02-arena-survivor",
+    "03-physics-launch",
+    "04-platformer",
+    "05-grid-match",
+    "06-tap-clicker",
+    "07-tower-defense",
+    "08-bounce-break",
+    "09-narrative-sim",
+    "10-music-tap"
+  ]
+}

@@ -1,0 +1,76 @@
+{
+  "meta": { "id": "physics-launch", "title": "Physics Launch", "version": "0.1.0", "archetype": "physics-launch", "scoreLabel": "Score" },
+  "text": {
+    "controlsKeyboard": "Left/Right: aim - Hold Space: power, release: launch",
+    "controlsTouch": "Drag back and release to launch",
+    "controlsTouchImpulse": "Touch to aim, hold for power, release to launch",
+    "lose": "Out of shots",
+    "win": "All levels cleared!",
+    "levelClear": "Level clear!",
+    "level": "Level",
+    "shots": "Shots",
+    "next": "Next level"
+  },
+  "input": {
+    "launchMode": "slingshot",
+    "bindings": {
+      "aimUp": { "keys": ["ArrowLeft", "ArrowUp", "KeyA", "KeyW"], "pointer": [] },
+      "aimDown": { "keys": ["ArrowRight", "ArrowDown", "KeyD", "KeyS"], "pointer": [] },
+      "charge": { "keys": ["Space"], "pointer": ["drag", "hold"] }
+    }
+  },
+  "launcher": {
+    "maxPull": 220,
+    "minPower": 0.12,
+    "maxLaunchSpeed": 1600,
+    "aimSpeed": 90,
+    "minAngle": 5,
+    "maxAngle": 85,
+    "startAngle": 45,
+    "chargeTime": 1,
+    "meterSpeed": 0.8,
+    "previewEnabled": true,
+    "previewDots": 12,
+    "previewTime": 0.6,
+    "look": { "shape": "ring", "color": "line", "size": 72 }
+  },
+  "projectile": {
+    "radius": 24,
+    "gravity": 1800,
+    "restitution": 0.55,
+    "friction": 0.8,
+    "airDrag": 0,
+    "restSpeed": 40,
+    "restTime": 0.5,
+    "maxFlightTime": 8,
+    "minBreakSpeed": 200,
+    "trailInterval": 0.05,
+    "look": { "shape": "circle", "color": "player", "size": 48 }
+  },
+  "rules": { "shotBonus": 500, "floorY": 1200, "sideWalls": true, "outMargin": 200 },
+  "entities": [
+    { "id": "target", "kind": "target", "points": 100, "radius": 32, "look": { "shape": "circle", "color": "pickup", "size": 64 } },
+    { "id": "bigTarget", "kind": "target", "points": 300, "radius": 48, "look": { "shape": "hexagon", "color": "special", "size": 96 } },
+    { "id": "wall", "kind": "obstacle", "restitution": 0.55, "look": { "shape": "rect", "color": "neutral" } },
+    { "id": "bouncer", "kind": "obstacle", "restitution": 1.15, "look": { "shape": "rect", "color": "positive" } },
+    { "id": "sticky", "kind": "obstacle", "restitution": 0.1, "look": { "shape": "rect", "color": "line" } }
+  ],
+  "levels": {
+    "list": [
+      { "id": "l1", "shots": 3, "launcher": { "x": 140, "y": 1080 }, "obstacles": [], "targets": [{ "type": "target", "x": 560, "y": 1100 }, { "type": "target", "x": 620, "y": 900 }] },
+      { "id": "l2", "shots": 3, "launcher": { "x": 140, "y": 1080 }, "obstacles": [{ "type": "wall", "x": 380, "y": 900, "w": 40, "h": 300 }], "targets": [{ "type": "target", "x": 560, "y": 1120 }, { "type": "bigTarget", "x": 600, "y": 760 }] },
+      { "id": "l3", "shots": 3, "launcher": { "x": 140, "y": 1080 }, "obstacles": [{ "type": "wall", "x": 440, "y": 600, "w": 280, "h": 40 }, { "type": "bouncer", "x": 300, "y": 300, "w": 200, "h": 30 }], "targets": [{ "type": "target", "x": 600, "y": 540 }, { "type": "target", "x": 520, "y": 1120 }, { "type": "target", "x": 660, "y": 1120 }] },
+      { "id": "l4", "shots": 4, "launcher": { "x": 120, "y": 1100 }, "obstacles": [{ "type": "wall", "x": 300, "y": 700, "w": 40, "h": 500 }, { "type": "sticky", "x": 500, "y": 980, "w": 220, "h": 30 }, { "type": "bouncer", "x": 0, "y": 420, "w": 30, "h": 300 }], "targets": [{ "type": "target", "x": 420, "y": 1120 }, { "type": "bigTarget", "x": 620, "y": 900 }, { "type": "target", "x": 600, "y": 380 }] },
+      { "id": "l5", "shots": 3, "launcher": { "x": 120, "y": 1100 }, "obstacles": [{ "type": "wall", "x": 260, "y": 500, "w": 40, "h": 700 }, { "type": "wall", "x": 460, "y": 300, "w": 40, "h": 600 }, { "type": "bouncer", "x": 520, "y": 160, "w": 200, "h": 30 }], "targets": [{ "type": "target", "x": 380, "y": 1120 }, { "type": "target", "x": 620, "y": 1120 }, { "type": "bigTarget", "x": 380, "y": 420 }] }
+    ]
+  },
+  "limits": { "targets": 24, "obstacles": 32, "trailDots": 30 },
+  "audio": {
+    "sfx": {
+      "charge": { "wave": "sine", "freq": 300, "freqEnd": 600, "duration": 0.08, "volume": 0.15 },
+      "bounce": { "wave": "triangle", "freq": 240, "freqEnd": 180, "duration": 0.05, "volume": 0.3 },
+      "targetBreak": { "wave": "square", "freq": 700, "freqEnd": 1400, "duration": 0.12, "volume": 0.35 },
+      "levelClear": { "wave": "triangle", "freq": 659, "freqEnd": 1318, "duration": 0.35, "volume": 0.4 }
+    }
+  }
+}

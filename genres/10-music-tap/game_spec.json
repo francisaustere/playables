@@ -1,0 +1,86 @@
+{
+  "meta": { "id": "music-tap", "title": "Music Tap", "version": "0.1.0", "archetype": "rhythm", "scoreLabel": "Score" },
+  "text": {
+    "controlsKeyboard": "D F J K (or arrows): hit the lanes",
+    "controlsTouch": "Tap the lanes",
+    "win": "Song clear!",
+    "lose": "Out of rhythm",
+    "perfect": "Perfect",
+    "good": "Good",
+    "miss": "Miss",
+    "combo": "Combo",
+    "accuracy": "Accuracy",
+    "maxCombo": "Max combo"
+  },
+  "input": {
+    "bindings": {
+      "lane0": { "keys": ["KeyD", "ArrowLeft"], "pointer": "laneZone0" },
+      "lane1": { "keys": ["KeyF", "ArrowDown"], "pointer": "laneZone1" },
+      "lane2": { "keys": ["KeyJ", "ArrowUp"], "pointer": "laneZone2" },
+      "lane3": { "keys": ["KeyK", "ArrowRight"], "pointer": "laneZone3" }
+    },
+    "laneZoneTop": 560
+  },
+  "rules": {
+    "perfectWindow": 0.05,
+    "goodWindow": 0.12,
+    "perfectPoints": 300,
+    "goodPoints": 100,
+    "multiplierSteps": [{ "combo": 0, "multiplier": 1 }, { "combo": 10, "multiplier": 2 }, { "combo": 25, "multiplier": 3 }, { "combo": 50, "multiplier": 4 }],
+    "healthStart": 1,
+    "healthPerfect": 0.02,
+    "healthGood": 0.01,
+    "healthMiss": -0.08,
+    "ghostTapHealth": 0,
+    "audioOffset": 0,
+    "leadIn": 2,
+    "endPadding": 1.5,
+    "resumeRewind": 2,
+    "scheduleLookahead": 0.15
+  },
+  "player": {
+    "lanes": 4,
+    "laneWidth": 150,
+    "hitY": 1080,
+    "spawnY": 120,
+    "receptorLook": { "shape": "ring", "color": "player", "size": 110 }
+  },
+  "entities": [
+    { "id": "tap", "kind": "note", "look": { "shape": "roundRect", "color": "pickup", "w": 120, "h": 36 } }
+  ],
+  "difficulty": {
+    "travelTime": 1.4,
+    "missDamageScale": [{ "at": 0, "value": 1 }, { "at": 40, "value": 1.25 }, { "at": 60, "value": 1.5 }]
+  },
+  "chart": {
+    "bpm": 120,
+    "stepsPerBeat": 2,
+    "patterns": [
+      { "id": "warm", "lanes": ["x.......x.......", "....x.......x...", "................", "................"] },
+      { "id": "a", "lanes": ["x.......x.......", "..x.......x.....", "....x.......x...", "......x.......x."] },
+      { "id": "b", "lanes": ["x...x.......x...", "......x.......x.", "..x.......x.....", "........x......."] },
+      { "id": "c", "lanes": ["x...x...x...x...", "..x...x...x...x.", "..x...x...x...x.", "x...x...x...x..."] },
+      { "id": "d", "lanes": ["x.x...x.x...x...", "..x.x...x.x...x.", "....x.x.....x.x.", "x.....x.x.x....."] }
+    ],
+    "sequence": ["warm", "a", "a", "b", "a", "b", "c", "c", "b", "c", "d", "d", "a", "c", "d", "warm"],
+    "backing": [
+      { "sfx": "kick", "steps": "x.x.x.x.x.x.x.x." },
+      { "sfx": "snare", "steps": "..x...x...x...x." },
+      { "sfx": "hat", "steps": ".x.x.x.x.x.x.x.x" }
+    ],
+    "laneSfx": ["laneTone0", "laneTone1", "laneTone2", "laneTone3"]
+  },
+  "limits": { "notes": 64, "popups": 16 },
+  "audio": {
+    "sfx": {
+      "kick": { "wave": "sine", "freq": 150, "freqEnd": 50, "duration": 0.12, "volume": 0.6 },
+      "snare": { "wave": "noise", "freq": 0, "duration": 0.1, "volume": 0.3 },
+      "hat": { "wave": "noise", "freq": 0, "duration": 0.03, "volume": 0.12 },
+      "laneTone0": { "wave": "triangle", "freq": 523, "duration": 0.15, "volume": 0.3 },
+      "laneTone1": { "wave": "triangle", "freq": 659, "duration": 0.15, "volume": 0.3 },
+      "laneTone2": { "wave": "triangle", "freq": 784, "duration": 0.15, "volume": 0.3 },
+      "laneTone3": { "wave": "triangle", "freq": 880, "duration": 0.15, "volume": 0.3 },
+      "miss": { "wave": "noise", "freq": 0, "duration": 0.06, "volume": 0.15 }
+    }
+  }
+}

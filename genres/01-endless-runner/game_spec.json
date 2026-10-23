@@ -1,0 +1,79 @@
+{
+  "meta": { "id": "endless-runner", "title": "Endless Runner", "version": "0.1.0", "archetype": "endless-runner", "scoreLabel": "Score" },
+  "text": {
+    "controlsKeyboard": "Left/Right or A/D: change lane - Space/Up: jump",
+    "controlsTouch": "Swipe left/right: change lane - Tap or swipe up: jump",
+    "lose": "Run over",
+    "win": "Finish!",
+    "distanceUnit": "m",
+    "coins": "Coins"
+  },
+  "input": {
+    "bindings": {
+      "left": { "keys": ["ArrowLeft", "KeyA"], "pointer": "swipeLeft" },
+      "right": { "keys": ["ArrowRight", "KeyD"], "pointer": "swipeRight" },
+      "jump": { "keys": ["Space", "ArrowUp", "KeyW"], "pointer": ["swipeUp", "tap"] }
+    }
+  },
+  "rules": {
+    "lives": 1,
+    "invulnerableTime": 1.5,
+    "targetDistance": 0,
+    "unitsPerMeter": 100,
+    "pointsPerMeter": 1,
+    "reactionTime": 0.25,
+    "gatesEnabled": true,
+    "maxMultiplier": 5
+  },
+  "player": {
+    "lanes": 3,
+    "laneWidth": 200,
+    "y": 1060,
+    "startLane": 1,
+    "laneSwitchDuration": 0.12,
+    "jumpEnabled": true,
+    "jumpDuration": 0.6,
+    "jumpScale": 1.3,
+    "airControl": true,
+    "hitboxScale": 0.8,
+    "look": { "shape": "roundRect", "color": "player", "size": 96 }
+  },
+  "entities": [
+    { "id": "block", "kind": "obstacle", "symbol": "X", "jumpable": false, "look": { "shape": "rect", "color": "hazard", "w": 150, "h": 120 } },
+    { "id": "barrier", "kind": "obstacle", "symbol": "L", "jumpable": true, "look": { "shape": "rect", "color": "hazard", "w": 180, "h": 36 } },
+    { "id": "coin", "kind": "pickup", "symbol": "C", "points": 10, "look": { "shape": "diamond", "color": "pickup", "size": 44 } },
+    { "id": "gateX2", "kind": "gate", "symbol": "2", "multiplier": 2, "duration": 8, "look": { "shape": "hexagon", "color": "special", "size": 120 } },
+    { "id": "gateX3", "kind": "gate", "symbol": "3", "multiplier": 3, "duration": 6, "look": { "shape": "hexagon", "color": "special", "size": 120 } }
+  ],
+  "difficulty": {
+    "speed": [{ "at": 0, "value": 600 }, { "at": 60, "value": 1000 }, { "at": 180, "value": 1400 }],
+    "rowGap": [{ "at": 0, "value": 720 }, { "at": 90, "value": 440 }, { "at": 180, "value": 380 }],
+    "coinTrailLength": 4,
+    "coinSpacing": 90
+  },
+  "levels": {
+    "patterns": [
+      { "id": "x-left", "lanes": "X..", "minTime": 0, "weight": 3 },
+      { "id": "x-mid", "lanes": ".X.", "minTime": 0, "weight": 3 },
+      { "id": "x-right", "lanes": "..X", "minTime": 0, "weight": 3 },
+      { "id": "coins-mid", "lanes": ".C.", "minTime": 0, "weight": 2 },
+      { "id": "x-coins", "lanes": "XC.", "minTime": 5, "weight": 2 },
+      { "id": "low-mid", "lanes": ".L.", "minTime": 10, "weight": 2 },
+      { "id": "low-all", "lanes": "LLL", "minTime": 20, "weight": 1 },
+      { "id": "xx-left", "lanes": "XX.", "minTime": 20, "weight": 2 },
+      { "id": "xx-right", "lanes": ".XX", "minTime": 20, "weight": 2 },
+      { "id": "x-side", "lanes": "X.X", "minTime": 30, "weight": 2 },
+      { "id": "gate-mid", "lanes": "X2X", "minTime": 15, "weight": 1 },
+      { "id": "gate-side", "lanes": "3XC", "minTime": 45, "weight": 1 },
+      { "id": "low-x", "lanes": "LXL", "minTime": 60, "weight": 2 }
+    ]
+  },
+  "limits": { "obstacles": 36, "pickups": 48, "gates": 6 },
+  "audio": {
+    "sfx": {
+      "laneSwitch": { "wave": "sine", "freq": 400, "freqEnd": 480, "duration": 0.05, "volume": 0.2 },
+      "land": { "wave": "triangle", "freq": 180, "freqEnd": 120, "duration": 0.06, "volume": 0.3 },
+      "gate": { "wave": "square", "freq": 660, "freqEnd": 1320, "duration": 0.2, "volume": 0.35 }
+    }
+  }
+}

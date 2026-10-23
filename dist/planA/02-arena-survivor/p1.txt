@@ -1,0 +1,23 @@
+This project is a remix of Template Zero. KEEP unchanged: platform (SDK) module, viewport, loop and pools, state machine and screens (Title, Paused, Result), input module, audio module and sfx kit, save module, draw kit, style palette, debug overlay, and the base sections of game_spec.json (display, style, audio, text, debug). REMOVE the Catch and Dodge demo (its world, systems, skins and game_spec entries) and build the new game below with the same structure: world + systems in fixed order + skins reading only look + entity types as data + every value in game_spec.json.
+
+GAME: ARENA SURVIVOR (skeleton template, primitives only). Top-down arena larger than the screen: move in 8 directions, shoot chasing enemies, survive. Put in game_spec.json (next prompts add more):
+{"meta":{"id":"arena-survivor","title":"Arena Survivor","version":"0.1.0","archetype":"survive-explore","scoreLabel":"XP"},"display":{"fit":"expand"},"input":{"aimDeadzone":0.25,"bindings":{"move":{"keys":{"up":["KeyW","ArrowUp"],"down":["KeyS","ArrowDown"],"left":["KeyA","ArrowLeft"],"right":["KeyD","ArrowRight"]},"pointer":"joystickLeft"},"aim":{"keys":{"up":["KeyI"],"down":["KeyK"],"left":["KeyJ"],"right":["KeyL"]},"pointer":["joystickRight","mouseAimRight"]}}},"rules":{"duration":180,"fireMode":"both","invulnerableTime":0.6,"knockback":260,"itemBlinkTime":3},"world":{"width":2400,"height":2400,"wallThickness":40,"floorGrid":160,"cameraLerp":8,"spawnMargin":80,"obstacles":[{"x":500,"y":500,"w":200,"h":200},{"x":1700,"y":500,"w":200,"h":200},{"x":500,"y":1700,"w":200,"h":200},{"x":1700,"y":1700,"w":200,"h":200}],"obstacleLook":{"shape":"rect","color":"neutral"},"scatterGems":40},"player":{"maxHp":100,"speed":420,"accel":3200,"magnetRadius":160,"pickupRadius":40,"look":{"shape":"circle","color":"player","size":60}},"weapon":{"fireInterval":0.28,"autoRange":420,"projectileSpeed":900,"projectileLife":1.1,"damage":1,"pierce":0,"look":{"shape":"circle","color":"player","size":20}},"entities":[{"id":"chaser","kind":"enemy","hp":2,"speed":160,"touchDamage":10,"xp":1,"look":{"shape":"triangle","color":"hazard","size":48}},{"id":"runner","kind":"enemy","hp":1,"speed":270,"touchDamage":8,"xp":1,"look":{"shape":"triangle","color":"hazard","size":36}},{"id":"tank","kind":"enemy","hp":8,"speed":90,"touchDamage":20,"xp":5,"look":{"shape":"rect","color":"hazard","size":80}},{"id":"gem","kind":"xp","magnetSpeed":700,"magnetRamp":0.15,"look":{"shape":"diamond","color":"pickup","size":24}},{"id":"heart","kind":"heal","heal":25,"dropChance":0.03,"life":20,"look":{"shape":"circle","color":"positive","size":32}},{"id":"magnet","kind":"magnet","dropChance":0.01,"life":20,"look":{"shape":"hexagon","color":"special","size":40}}]}
+
+WORLD AND CAMERA
+Origin top-left, border walls of wallThickness, solid rects world.obstacles (x,y top-left) drawn with obstacleLook. Player starts at the center. Camera += (player - camera) * min(1, cameraLerp*dt), clamped so the view stays inside the world (centered if the view is larger).
+
+INPUT
+move and aim are vectors; key groups {up,down,left,right} give a normalized 8-direction vector. joystickLeft / joystickRight = floating joystick for pointers that START in that screen half; a pointer keeps its role until released (two thumbs work). mouseAimRight = mouse button held, started in the right half: aim = normalize(pointer world pos - player).
+
+PLAYER
+velocity moves toward move*speed by at most accel*dt. Colliders are circles of radius look.size/2. Pushed out of walls/obstacles (circle vs AABB), slides. Enemy contact: hp -= touchDamage, invulnerable rules.invulnerableTime (blink), knockback away from the enemy.
+
+WEAPON (rules.fireMode)
+Cooldown fireInterval. directional, or both with |aim| > input.aimDeadzone: fire along aim. auto, or both without aim: fire at the nearest enemy within autoRange, none = no shot. Projectiles: projectileSpeed, projectileLife, damage, pass through pierce enemies, die on walls/obstacles.
+
+ENEMIES (entities with kind "enemy")
+Steer toward the player at speed, collide with walls/obstacles. Hit = white flash; hp 0 = particles + destroy sound. For now spawn a random type every 1 s on the border of the view + world.spawnMargin, inside the walls, never in view.
+
+ORDER per step: input, player, weapon, spawn, enemy, projectile, collision, pickup (next prompt), camera, end. hp <= 0 -> RESULT lose; rules.duration > 0 reached -> RESULT win.
+
+Skins read only look; everything spawned comes from pools. Check: move with keys, mouse, touch; aim with IJKL, mouse, right thumb while moving; no errors.

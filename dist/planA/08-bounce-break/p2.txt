@@ -1,0 +1,23 @@
+Keep everything. Add levels, difficulty and power-ups. Add these sections to game_spec.json:
+{"text":{"controlsKeyboard":"Left/Right or A/D: move - Space/Up: launch","controlsTouch":"Drag: move - Tap: launch","win":"All clear!","lose":"Game over","level":"Level","levelClear":"Level clear","tapToLaunch":"Tap or press Space to launch"},"difficulty":{"ballSpeed":[{"at":0,"value":700},{"at":60,"value":900},{"at":150,"value":1150}],"maxBallSpeed":1400},"levels":{"grid":{"columns":8,"blockWidth":80,"blockHeight":36,"gap":6,"top":220},"list":[{"id":"level1","speedScale":1,"rows":["11111111","11111111","1P1111P1","11111111"]},{"id":"level2","speedScale":1.1,"rows":["22222222","21111112","21P11P12","21111112","22222222"]},{"id":"level3","speedScale":1.2,"rows":["3S3333S3","22222222","1P1221P1","11111111","S......S","22222222"]}]},"limits":{"balls":6,"blocks":96,"powerups":8},"audio":{"sfx":{"paddle":{"wave":"triangle","freq":330,"freqEnd":440,"duration":0.05,"volume":0.3},"wall":{"wave":"sine","freq":260,"duration":0.03,"volume":0.15},"blockHit":{"wave":"square","freq":520,"duration":0.04,"volume":0.25},"ballLost":{"wave":"sawtooth","freq":220,"freqEnd":80,"duration":0.35,"volume":0.3},"levelClear":{"wave":"triangle","freq":660,"freqEnd":1320,"duration":0.35,"volume":0.4}}}}
+
+LEVELS
+Grid geometry from levels.grid: width = columns*blockWidth + (columns-1)*gap, centered; cell (c, r) center x = left + c*(blockWidth+gap) + blockWidth/2, y = top + r*(blockHeight+gap) + blockHeight/2. Build each level from levels.list[i].rows (cut or pad rows to columns). When a level is cleared: wait rules.levelClearDelay, then a LEVEL_CLEAR screen (text.levelClear, score, "tap or press Space") that leads to the next level with a new serve, lives kept. After the last level: RESULT win with score += rules.lifeBonus * lives. A level with no destructible block counts as cleared (debug warning only).
+
+DIFFICULTY
+Ball speed = min(curve(difficulty.ballSpeed, levelTime) * level.speedScale * slowFactor, difficulty.maxBallSpeed). curve() = linear interpolation between {at, value} points, holding the last value. levelTime restarts each level. Substeps grow with speed automatically.
+
+POWER-UPS
+When a block is destroyed, drop chance = the block dropChance if set, else rules.powerupDropChance; type picked among powerup entities by weight. The capsule falls at fallSpeed, is caught when it overlaps the paddle, lost below the stage. Effects by effect field (one handler each, no per-id branches):
+- widePaddle: paddle width * value (max player.maxWidth), tween 0.15 s, for duration s.
+- multiBall: each ball in play spawns value copies at +/-20 degrees from its direction, within limits.balls.
+- slowBall: slowFactor = value for duration s.
+Catching the same timed effect again refreshes its timer, no stacking. All timed effects end when a life is lost or the level changes. Losing a life only when the last ball is lost.
+
+SAVE
+On RESULT: sendScore(score), save best and progress {highestLevel}.
+
+ROBUSTNESS
+Balls, blocks, capsules, particles and popups come from pools sized by limits; skip spawns when empty. Paddle collision only counts when the ball is above the paddle center line and moving down. If the last block breaks while another ball is falling, the level is cleared and no life is lost. Pause during serve or flight resumes exactly.
+
+Check with debug.invincible (ball bounces on the bottom instead of being lost): play level 3 with 6 balls at 1400 u/s for 3 minutes: no tunneling, no frame drops, no errors.

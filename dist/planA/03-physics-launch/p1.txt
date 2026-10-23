@@ -1,0 +1,23 @@
+This project is a remix of Template Zero. KEEP unchanged: platform (SDK) module, viewport, loop and pools, state machine and screens (Title, Paused, Result), input module, audio module and sfx kit, save module, draw kit, style palette, debug overlay, and the base sections of game_spec.json (display, style, audio, text, debug). REMOVE the Catch and Dodge demo (its world, systems, skins and game_spec entries) and build the new game below with the same structure: world + systems in fixed order + skins reading only look + entity types as data + every value in game_spec.json.
+
+GAME: PHYSICS LAUNCH (skeleton template, primitives only). Aim, set power, launch a ball that flies under gravity and bounces, to break every target with limited shots. Portrait stage 720x1280, fit contain, fixed camera. Put in game_spec.json (next prompts add more):
+{"meta":{"id":"physics-launch","title":"Physics Launch","version":"0.1.0","archetype":"physics-launch","scoreLabel":"Score"},"input":{"launchMode":"slingshot","bindings":{"aimUp":{"keys":["ArrowLeft","ArrowUp","KeyA","KeyW"],"pointer":[]},"aimDown":{"keys":["ArrowRight","ArrowDown","KeyD","KeyS"],"pointer":[]},"charge":{"keys":["Space"],"pointer":["drag","hold"]}}},"launcher":{"maxPull":220,"minPower":0.12,"maxLaunchSpeed":1600,"aimSpeed":90,"minAngle":5,"maxAngle":85,"startAngle":45,"chargeTime":1,"meterSpeed":0.8,"previewEnabled":true,"previewDots":12,"previewTime":0.6,"look":{"shape":"ring","color":"line","size":72}},"projectile":{"radius":24,"gravity":1800,"restitution":0.55,"friction":0.8,"airDrag":0,"restSpeed":40,"restTime":0.5,"maxFlightTime":8,"minBreakSpeed":200,"trailInterval":0.05,"look":{"shape":"circle","color":"player","size":48}},"rules":{"shotBonus":500,"floorY":1200,"sideWalls":true,"outMargin":200},"entities":[{"id":"target","kind":"target","points":100,"radius":32,"look":{"shape":"circle","color":"pickup","size":64}},{"id":"bigTarget","kind":"target","points":300,"radius":48,"look":{"shape":"hexagon","color":"special","size":96}},{"id":"wall","kind":"obstacle","restitution":0.55,"look":{"shape":"rect","color":"neutral"}},{"id":"bouncer","kind":"obstacle","restitution":1.15,"look":{"shape":"rect","color":"positive"}},{"id":"sticky","kind":"obstacle","restitution":0.1,"look":{"shape":"rect","color":"line"}}]}
+
+FIELD
+Floor at rules.floorY (surface rect, line top edge). Left/right stage edges are walls if rules.sideWalls, else the ball is out beyond outMargin. Top open. Launcher ring at the level's launcher {x,y}; the ball rests on it before each shot.
+
+INPUT (input.launchMode, ignored while the ball flies)
+Angle 0 = right, 90 = up, clamped to [minAngle, maxAngle]. Launch velocity = (cos a, -sin a) * power * maxLaunchSpeed. Power < minPower on release = cancel, shot not used.
+- slingshot: press anywhere except UI buttons = anchor A; pull = A - pointer, length clamped to maxPull; angle from pull, power = |pull|/maxPull; release launches.
+- tapImpulse: while held, angle = direction launcher -> pointer; power meter ping-pongs 0-1-0 at meterSpeed cycles/s from 0; release launches.
+- Keyboard, both modes: aimUp/aimDown rotate at aimSpeed deg/s from startAngle; hold charge (Space): slingshot power rises linearly to 1 in chargeTime, tapImpulse uses the oscillating meter; release launches.
+While charging show: aim line from the ball (length 60 + 140*power), a power bar next to the launcher, and if previewEnabled previewDots dots of p0 + v t + 0.5 g t^2 over previewTime (no collisions, fading).
+
+PHYSICS (one ball, radius look.size/2)
+v.y += gravity*dt; v *= (1 - airDrag*dt); move with substeps n = min(8, ceil(|v|*dt / (radius*0.5))) so it never tunnels. Circle vs AABB for obstacles, floor, walls: push out along the normal, reflect the normal velocity * restitution (the obstacle type's restitution; floor/walls use projectile.restitution), multiply tangential velocity by friction. Bounce sound if normal speed > 80.
+Targets (kind target, circles at x,y): if impact speed >= minBreakSpeed the target breaks (points, burst, popup) and the ball keeps going unaffected; slower = bounce like a wall.
+Shot ends when speed < restSpeed for restTime s, or flight > maxFlightTime, or out of bounds. Then reset the ball on the launcher.
+
+Obstacles (kind obstacle) are static rects {type,x,y,w,h}, x,y top-left. Temporary test level (data comes next prompt): launcher (140,1080), wall x380 y900 w40 h300, targets (560,1120), (600,760).
+
+Skins (ball, target, obstacle, launcher) read only look. Check slingshot, tapImpulse and keyboard all launch identically; no tunneling at full power.

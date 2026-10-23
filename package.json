@@ -1,0 +1,11 @@
+{
+  "name": "2026-playables-builder-templates",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Specs and prompts for the YouTube Playables Builder skeleton templates (makemepulse, confidential)",
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "report": "node scripts/build.mjs --report"
+  }
+}

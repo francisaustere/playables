@@ -1,0 +1,25 @@
+Keep everything. Add the full content systems and the difficulty. Add these sections to game_spec.json:
+{"difficulty":{"speed":[{"at":0,"value":600},{"at":60,"value":1000},{"at":180,"value":1400}],"rowGap":[{"at":0,"value":720},{"at":90,"value":440},{"at":180,"value":380}],"coinTrailLength":4,"coinSpacing":90},"levels":{"patterns":[{"id":"x-left","lanes":"X..","minTime":0,"weight":3},{"id":"x-mid","lanes":".X.","minTime":0,"weight":3},{"id":"x-right","lanes":"..X","minTime":0,"weight":3},{"id":"coins-mid","lanes":".C.","minTime":0,"weight":2},{"id":"x-coins","lanes":"XC.","minTime":5,"weight":2},{"id":"low-mid","lanes":".L.","minTime":10,"weight":2},{"id":"low-all","lanes":"LLL","minTime":20,"weight":1},{"id":"xx-left","lanes":"XX.","minTime":20,"weight":2},{"id":"xx-right","lanes":".XX","minTime":20,"weight":2},{"id":"x-side","lanes":"X.X","minTime":30,"weight":2},{"id":"gate-mid","lanes":"X2X","minTime":15,"weight":1},{"id":"gate-side","lanes":"3XC","minTime":45,"weight":1},{"id":"low-x","lanes":"LXL","minTime":60,"weight":2}]},"limits":{"obstacles":36,"pickups":48,"gates":6},"audio":{"sfx":{"laneSwitch":{"wave":"sine","freq":400,"freqEnd":480,"duration":0.05,"volume":0.2},"land":{"wave":"triangle","freq":180,"freqEnd":120,"duration":0.06,"volume":0.3},"gate":{"wave":"square","freq":660,"freqEnd":1320,"duration":0.2,"volume":0.35}}}}
+
+DIFFICULTY
+speed = curve(difficulty.speed, runTime) and rowGap = curve(difficulty.rowGap, runTime), with curve() = linear interpolation between {at, value} points, holding the last value. The safe path rule uses the current values.
+
+PATTERNS
+Pick rows from levels.patterns, weighted random by weight, only among patterns with minTime <= runTime and lanes string length == player.lanes. Validate patterns once at boot; if none fits the lane count, fall back to rows with one random block and log a warning only when debug is on. Keep the safe path rule.
+
+COINS
+A "C" cell spawns a vertical trail of coinTrailLength coins spaced coinSpacing, starting at the row. Coin: score += points * multiplier, coins counter +1, collect sound, rising "+N" popup in pickup color.
+
+GATES (multiplier)
+Entities with kind "gate" occupy one lane and never block. If rules.gatesEnabled is false, treat gate symbols as ".". Passing a gate: multiplier = min(max(multiplier, gate.multiplier), rules.maxMultiplier) and restart a timer of gate.duration; the same value refreshes the timer; when the timer ends multiplier goes back to 1. Gate sound + particle burst in special color. The multiplier applies to distance points and coin points.
+
+LIVES
+rules.lives > 1: after a hit the player is invulnerable for rules.invulnerableTime and blinks (alpha 0.4/1 at 10 Hz). Two hits in the same step cost one life.
+
+END
+Lose when lives reach 0. If rules.targetDistance > 0, reaching it ends the run as a win (text.win). On RESULT: sendScore(floor(score)), save best and progress {bestDistance, totalCoins}.
+
+ROBUSTNESS
+All obstacles, coins, gates, particles and popups come from pools sized by limits; if a pool is empty skip the spawn, never allocate. Swipe left then right in the same step applies both in order. Pausing mid-jump or mid-lane-switch resumes exactly.
+
+Check with debug.invincible for 5 minutes: speed reaches 1400, gaps shrink, there is never a row without a reachable lane, no frame drop, no errors.

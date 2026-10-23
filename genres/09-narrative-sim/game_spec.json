@@ -1,0 +1,102 @@
+{
+  "meta": { "id": "narrative-sim", "title": "The Settlement", "version": "0.1.0", "archetype": "narrative-sim", "scoreLabel": "Days" },
+  "text": {
+    "controlsKeyboard": "Left/Right or 1/2: lean - same key or Enter: choose",
+    "controlsTouch": "Swipe the card, or tap a choice twice",
+    "win": "The settlement stands",
+    "lose": "The settlement falls",
+    "day": "Day",
+    "endingsFound": "Endings found",
+    "newEnding": "New ending!"
+  },
+  "input": {
+    "bindings": {
+      "chooseLeft": { "keys": ["ArrowLeft", "KeyA", "Digit1"], "pointer": "leftButton" },
+      "chooseRight": { "keys": ["ArrowRight", "KeyD", "Digit2"], "pointer": "rightButton" },
+      "drag": { "keys": [], "pointer": "cardDrag" },
+      "confirm": { "keys": ["Enter", "Space"], "pointer": "tap" }
+    }
+  },
+  "rules": {
+    "targetTurns": 40,
+    "twoStepChoice": true,
+    "swipeThreshold": 140,
+    "previewMode": "dots",
+    "bigChangeThreshold": 15,
+    "noRepeatWindow": 5,
+    "storylineWeight": 2,
+    "fallbackEventId": "quietDay",
+    "winEndingId": "foundersDay",
+    "transitionDuration": 0.25,
+    "statTweenDuration": 0.4
+  },
+  "card": { "width": 560, "height": 680, "y": 660, "tilt": 12, "avatarSize": 120, "textMaxLines": 6, "look": { "shape": "roundRect", "color": "surface", "w": 560, "h": 680 } },
+  "stats": [
+    { "id": "food", "label": "Food", "min": 0, "max": 100, "start": 50, "fatalAtMax": true, "endingAtMin": "emptyGranary", "endingAtMax": "rottingStores", "look": { "shape": "circle", "color": "pickup", "size": 44 } },
+    { "id": "mood", "label": "Mood", "min": 0, "max": 100, "start": 50, "fatalAtMax": true, "endingAtMin": "silentSquare", "endingAtMax": "endlessFestival", "look": { "shape": "diamond", "color": "positive", "size": 44 } },
+    { "id": "coins", "label": "Coins", "min": 0, "max": 100, "start": 50, "fatalAtMax": true, "endingAtMin": "emptyChest", "endingAtMax": "gildedCage", "look": { "shape": "hexagon", "color": "special", "size": 44 } },
+    { "id": "safety", "label": "Safety", "min": 0, "max": 100, "start": 50, "fatalAtMax": true, "endingAtMin": "openGates", "endingAtMax": "ironRule", "look": { "shape": "triangle", "color": "player", "size": 44 } }
+  ],
+  "characters": [
+    { "id": "farmer", "name": "Mara, farmer", "look": { "shape": "circle", "color": "pickup", "size": 120 } },
+    { "id": "guard", "name": "Captain Ode", "look": { "shape": "triangle", "color": "player", "size": 120 } },
+    { "id": "merchant", "name": "Pell, merchant", "look": { "shape": "diamond", "color": "special", "size": 120 } },
+    { "id": "elder", "name": "Elder Juno", "look": { "shape": "hexagon", "color": "positive", "size": 120 } },
+    { "id": "traveler", "name": "A traveler", "look": { "shape": "ring", "color": "neutral", "size": 120 } }
+  ],
+  "endings": [
+    { "id": "emptyGranary", "outcome": "lose", "title": "Empty Granary", "text": "The last sack of grain is gone. The settlers pack up and leave." },
+    { "id": "rottingStores", "outcome": "lose", "title": "Rotting Stores", "text": "Food piles up and spoils. Pests take over the storehouses." },
+    { "id": "silentSquare", "outcome": "lose", "title": "Silent Square", "text": "Nobody believes in the settlement anymore. The houses empty one by one." },
+    { "id": "endlessFestival", "outcome": "lose", "title": "Endless Festival", "text": "The party never stops. Nobody works and the fields grow wild." },
+    { "id": "emptyChest", "outcome": "lose", "title": "Empty Chest", "text": "Debts pile up. The merchants' guild takes over the settlement." },
+    { "id": "gildedCage", "outcome": "lose", "title": "Gilded Cage", "text": "So much gold that every bandit in the land comes knocking." },
+    { "id": "openGates", "outcome": "lose", "title": "Open Gates", "text": "With no one on watch, the settlers move to a safer valley." },
+    { "id": "ironRule", "outcome": "lose", "title": "Iron Rule", "text": "The guards control everything. The settlers vote you out." },
+    { "id": "foundersDay", "outcome": "win", "title": "Founder's Day", "text": "Forty days, and the settlement stands strong. They name the square after you." },
+    { "id": "greatBridge", "outcome": "win", "title": "The Great Bridge", "text": "The bridge opens and the valley comes to trade. Your settlement becomes a town." }
+  ],
+  "events": [
+    { "id": "harvest", "who": "farmer", "text": "The harvest came early this year. Should we sell some at the market?", "left": { "label": "Keep it", "effects": { "food": 10, "coins": -5 } }, "right": { "label": "Sell it", "effects": { "food": -10, "coins": 15 } } },
+    { "id": "palisade", "who": "guard", "text": "The palisade has holes. I need workers for a week.", "left": { "label": "Not now", "effects": { "safety": -10 } }, "right": { "label": "Fix it", "effects": { "safety": 15, "coins": -10, "food": -5 } } },
+    { "id": "festival", "who": "elder", "text": "The people want a spring festival.", "left": { "label": "Too costly", "effects": { "mood": -10 } }, "right": { "label": "Celebrate", "effects": { "mood": 15, "food": -10, "coins": -5 } } },
+    { "id": "spices", "who": "merchant", "text": "Rare spices from the south. Interested?", "left": { "label": "No thanks", "effects": { "mood": -5 } }, "right": { "label": "Buy them", "effects": { "coins": -15, "mood": 10 } } },
+    { "id": "newFamily", "who": "traveler", "text": "My family would like to settle here. Will you have us?", "left": { "label": "Sorry, no", "effects": { "mood": -5, "safety": 5 } }, "right": { "label": "Welcome", "effects": { "food": -10, "mood": 10, "safety": -5 } } },
+    { "id": "wolves", "who": "guard", "text": "Wolves were seen near the fields at night.", "left": { "label": "Ignore it", "effects": { "food": -15 } }, "right": { "label": "Build fences", "effects": { "coins": -10, "food": 5, "safety": 5 } } },
+    { "id": "marketFee", "who": "merchant", "text": "The treasury is thin. Raise the market fee?", "left": { "label": "Keep it low", "effects": { "coins": -10, "mood": 5 } }, "right": { "label": "Raise it", "effects": { "coins": 15, "mood": -10 } } },
+    { "id": "storm", "who": "farmer", "text": "A storm is coming. Cover the grain or the market stalls?", "left": { "label": "The grain", "effects": { "food": 5, "coins": -10 } }, "right": { "label": "The stalls", "effects": { "food": -10, "coins": 5 } } },
+    { "id": "teacher", "who": "elder", "text": "The children need a teacher.", "left": { "label": "Later", "effects": { "mood": -5 } }, "right": { "label": "Hire one", "effects": { "coins": -10, "mood": 10 } } },
+    { "id": "nightWatch", "who": "guard", "text": "Should we double the night watch?", "left": { "label": "No need", "effects": { "safety": -10, "mood": 5 } }, "right": { "label": "Double it", "effects": { "safety": 10, "mood": -5, "coins": -5 } } },
+    { "id": "millIdea", "who": "farmer", "text": "We could build a mill by the river.", "once": true, "left": { "label": "Too ambitious", "effects": { "mood": -5 } }, "right": { "label": "Start building", "effects": { "coins": -15 }, "setFlags": ["millStarted"] } },
+    { "id": "quietDay", "who": "traveler", "text": "A quiet day. What do you do?", "weight": 0, "left": { "label": "Rest", "effects": { "mood": 5, "food": -5 } }, "right": { "label": "Work", "effects": { "coins": 5, "mood": -5 } } }
+  ],
+  "storylines": [
+    { "id": "mill", "events": [
+      { "id": "millFood", "who": "farmer", "text": "The mill is half built. The workers ask for more food.", "once": true, "if": { "flags": ["millStarted"] }, "left": { "label": "Pause works", "effects": { "mood": -5 }, "clearFlags": ["millStarted"] }, "right": { "label": "Feed them", "effects": { "food": -10 }, "setFlags": ["millFed"] } },
+      { "id": "millDone", "who": "farmer", "text": "The mill is done! What do we grind first?", "once": true, "if": { "flags": ["millFed"] }, "left": { "label": "Grain for us", "effects": { "food": 20 } }, "right": { "label": "Grain to sell", "effects": { "coins": 20 } } }
+    ] },
+    { "id": "bridge", "events": [
+      { "id": "bridgeIdea", "who": "merchant", "text": "A bridge across the river would bring trade.", "once": true, "minTurn": 8, "left": { "label": "Not needed", "effects": { "coins": 5 } }, "right": { "label": "Plan it", "effects": { "coins": -10 }, "setFlags": ["bridgePlanned"] } },
+      { "id": "bridgeGuards", "who": "guard", "text": "The builders need guards on the far bank.", "once": true, "if": { "flags": ["bridgePlanned"] }, "left": { "label": "No guards", "effects": { "safety": 5 }, "clearFlags": ["bridgePlanned"] }, "right": { "label": "Send guards", "effects": { "safety": -10 }, "setFlags": ["bridgeGuarded"] } },
+      { "id": "bridgeOpen", "who": "elder", "text": "The bridge is finished. Who may cross it?", "once": true, "if": { "flags": ["bridgeGuarded"], "stats": { "safety": { "min": 30 } } }, "left": { "label": "Traders only", "effects": { "coins": 15 } }, "right": { "label": "Everyone", "ending": "greatBridge" } }
+    ] },
+    { "id": "envoy", "events": [
+      { "id": "envoyArrives", "who": "traveler", "text": "A royal envoy wants to inspect the settlement.", "once": true, "minTurn": 12, "left": { "label": "Refuse", "effects": { "safety": -5 }, "setFlags": ["envoyRefused"] }, "right": { "label": "Host them", "effects": { "food": -10, "coins": -10 }, "setFlags": ["envoyHosted"], "next": "envoyCharter" } },
+      { "id": "envoyCharter", "who": "merchant", "text": "The envoy liked us! They offer a trade charter.", "once": true, "if": { "flags": ["envoyHosted"] }, "left": { "label": "Decline", "effects": { "mood": -5 } }, "right": { "label": "Sign it", "effects": { "coins": 20, "safety": 5 } } },
+      { "id": "envoyCamp", "who": "guard", "text": "The envoy's escort is camping at our gates.", "once": true, "if": { "flags": ["envoyRefused"] }, "left": { "label": "Wait it out", "effects": { "mood": -10 } }, "right": { "label": "Send gifts", "effects": { "coins": -15 }, "clearFlags": ["envoyRefused"] } }
+    ] }
+  ],
+  "difficulty": {
+    "effectScale": [{ "at": 0, "value": 1 }, { "at": 20, "value": 1.2 }, { "at": 40, "value": 1.4 }]
+  },
+  "limits": { "flags": 64, "history": 8, "popups": 8 },
+  "audio": {
+    "sfx": {
+      "cardIn": { "wave": "sine", "freq": 300, "freqEnd": 420, "duration": 0.08, "volume": 0.2 },
+      "lean": { "wave": "triangle", "freq": 500, "duration": 0.04, "volume": 0.15 },
+      "statUp": { "wave": "sine", "freq": 660, "freqEnd": 880, "duration": 0.1, "volume": 0.25 },
+      "statDown": { "wave": "sine", "freq": 440, "freqEnd": 300, "duration": 0.1, "volume": 0.25 },
+      "ending": { "wave": "triangle", "freq": 392, "freqEnd": 196, "duration": 0.6, "volume": 0.35 }
+    }
+  }
+}

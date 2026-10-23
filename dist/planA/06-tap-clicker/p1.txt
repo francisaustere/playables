@@ -1,0 +1,22 @@
+This project is a remix of Template Zero. KEEP unchanged: platform (SDK) module, viewport, loop and pools, state machine and screens (Title, Paused, Result), input module, audio module and sfx kit, save module, draw kit, style palette, debug overlay, and the base sections of game_spec.json (display, style, audio, text, debug). REMOVE the Catch and Dodge demo (its world, systems, skins and game_spec entries) and build the new game below with the same structure: world + systems in fixed order + skins reading only look + entity types as data + every value in game_spec.json.
+
+GAME: TAP & CHOOSE (clicker skeleton, primitives only). Portrait stage 720x1280 fit contain. Tap the core to earn coins, buy upgrades, reach the coin goal before time runs out. Put these sections in game_spec.json (genre part; next prompt adds more):
+{"meta":{"id":"tap-clicker","title":"Tap & Choose","version":"0.1.0","archetype":"tap-clicker","scoreLabel":"Coins earned"},"input":{"bindings":{"tap":{"keys":["Space"],"pointer":"tapCore"},"buy1":{"keys":["Digit1","Numpad1"],"pointer":"upgradeButton"},"buy2":{"keys":["Digit2","Numpad2"],"pointer":"upgradeButton"},"buy3":{"keys":["Digit3","Numpad3"],"pointer":"upgradeButton"},"buy4":{"keys":["Digit4","Numpad4"],"pointer":"upgradeButton"},"choose1":{"keys":["Digit1","Numpad1","ArrowLeft"],"pointer":"choiceButton"},"choose2":{"keys":["Digit2","Numpad2","ArrowRight"],"pointer":"choiceButton"}}},"rules":{"targetCoins":100000,"timeLimit":240,"timeBonusPerSecond":500,"maxTapsPerSecond":20,"passivePopupInterval":1,"choiceTimeout":8},"economy":{"startCoins":0,"tapValue":1,"upgrades":[{"id":"strongTap","name":"Strong tap","baseCost":15,"costGrowth":1.15,"maxLevel":50,"effect":{"tapAdd":1},"look":{"shape":"circle","color":"player","size":40}},{"id":"helper","name":"Helper","baseCost":50,"costGrowth":1.15,"maxLevel":50,"effect":{"perSecond":2},"look":{"shape":"diamond","color":"pickup","size":40}},{"id":"factory","name":"Factory","baseCost":600,"costGrowth":1.15,"maxLevel":50,"effect":{"perSecond":25},"look":{"shape":"rect","color":"neutral","size":40}},{"id":"booster","name":"Booster x2","baseCost":2000,"costGrowth":4,"maxLevel":4,"effect":{"multiply":2},"look":{"shape":"hexagon","color":"special","size":40}}]},"entities":[{"id":"core","kind":"core","x":360,"y":560,"tapSquash":0.12,"popupSpread":50,"look":{"shape":"circle","color":"player","size":260}}]}
+
+CORE
+The entity of kind "core" is drawn at (x, y) with its look. Action tap: Space keydown (ignore auto-repeat), or tapCore = pointer-down inside the core circle (each finger counts). Cap all taps at rules.maxTapsPerSecond, extra taps silently ignored. On tap: bank += tapValue and totalEarned += tapValue, squash by tapSquash, rising "+N" popup at the pointer (keyboard: core center) with random x offset +/- popupSpread.
+
+ECONOMY
+bank (float, spendable) and totalEarned (float, never decreases).
+tapValue = (economy.tapValue + sum of level * effect.tapAdd) * multiplier.
+perSecond = sum of level * effect.perSecond, times multiplier.
+multiplier = product of effect.multiply ^ level.
+Each fixed step: bank and totalEarned += perSecond * dt. Display floor values.
+
+UPGRADES
+economy.upgrades is data: cost(level) = floor(baseCost * costGrowth ^ level). Buy (actions buy1..buy4: keys 1-4 or tapping the button): if bank >= cost and level < maxLevel then bank -= cost, level + 1; otherwise a short shake of the button. At maxLevel show "MAX" and disable. Upgrade bar: 2x2 buttons at the bottom of the stage (y 900-1180, 320x120 each, 16 gap), each with icon (its look), name, level, cost (pickup color if affordable, textMuted if not) and effect hint ("+2/s", "x2"). Show key labels 1-4 once the keyboard has been used. Adding an upgrade entry in the spec must add a button without code changes (bar shows the first 4).
+
+END AND SCORE
+Win when bank >= rules.targetCoins. If rules.timeLimit > 0, lose when time runs out; timeLimit 0 = no timer, no lose. Score = floor(totalEarned) + (win ? floor(timeLeft) * timeBonusPerSecond : 0), clamped to Number.MAX_SAFE_INTEGER; sendScore(score) on RESULT, best = same value.
+
+Systems in this order: input, economy, goal, fx. Skins: drawCore, drawUpgradeIcon reading only look. Check: a full run with keyboard only, mouse only, touch only (multi-touch), no errors.
